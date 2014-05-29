@@ -1,7 +1,9 @@
 package com.example.taschenrechner;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -9,21 +11,88 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener {
 
+	private static String SHARED_PREFERENCES_FILE = "MemoryFile";
+
 	TextView output;
 	float result = 0;
 	boolean setPoint = false;
 	String a = "", b = "";
 	String type = "";
 
+	float m1, m2, m3, m4;
+	String M1 = "m1";
+	String M2 = "m2";
+	String M3 = "m3";
+	String M4 = "m4";
+
+	void loadPreferences() {
+		// Restore preferences
+		SharedPreferences settings = getSharedPreferences(
+				SHARED_PREFERENCES_FILE, 0);
+		setM1(settings.getFloat("memorystorage1", Float.NaN));
+		setM2(settings.getFloat("memorystorage2", Float.NaN));
+		setM3(settings.getFloat("memorystorage3", Float.NaN));
+		setM4(settings.getFloat("memorystorage4", Float.NaN));
+	}
+
+	void savePreferences() {
+		SharedPreferences settings = getSharedPreferences(
+				SHARED_PREFERENCES_FILE, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putFloat("memorystorage1", m1);
+		editor.putFloat("memorystorage2", m2);
+		editor.putFloat("memorystorage3", m3);
+		editor.putFloat("memorystorage4", m4);
+		editor.commit();
+	}
+
+	void saveButtonHandling(String buttonKey, float buttonValue, String inputAsString) {
+		loadPreferences();
+		
+		if (inputAsString.equals("")) {
+
+			if (buttonValue != Float.NaN) {
+				output.setText(inputAsString + buttonValue);
+			}
+
+		} else {
+			if (inputAsString.contains(String.valueOf(Float.NaN))) {
+				output.setText("ERROR");
+			} else {
+
+				if (buttonKey.equals(M1)) {
+					setM1(Float.parseFloat(inputAsString));
+				} else if (buttonKey.equals(M2)) {
+					setM2(Float.parseFloat(inputAsString));
+				} else if (buttonKey.equals(M3)) {
+					setM3(Float.parseFloat(inputAsString));
+					savePreferences();
+
+				} else if (buttonKey.equals(M4)) {
+					setM4(Float.parseFloat(inputAsString));
+					savePreferences();
+
+				}
+
+			}
+		}
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		loadPreferences();
+
 		output = (TextView) this.findViewById(R.id.tv_result);
 		output.setText("");
 
-		Button buttons[] = { (Button) findViewById(R.id.button1),
+		Button buttons[] = { (Button) findViewById(R.id.buttonM1),
+				(Button) findViewById(R.id.buttonM2),
+				(Button) findViewById(R.id.buttonM3),
+				(Button) findViewById(R.id.buttonM4),
+				(Button) findViewById(R.id.button1),
 				(Button) findViewById(R.id.button2),
 				(Button) findViewById(R.id.button3),
 				(Button) findViewById(R.id.button3),
@@ -51,8 +120,23 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View view) {
 
 		output = (TextView) this.findViewById(R.id.tv_result);
+		String inputAsString = String.valueOf(output.getText());
 
 		switch (view.getId()) {
+
+		case R.id.buttonM1:
+			saveButtonHandling(M1, m1, inputAsString);
+			break;
+		case R.id.buttonM2:
+			saveButtonHandling(M2, m2, inputAsString);
+			break;
+		case R.id.buttonM3:
+			saveButtonHandling(M3, m3, inputAsString);
+			break;
+		case R.id.buttonM4:
+			saveButtonHandling(M4, m4, inputAsString);
+			break;
+
 		case R.id.button0:
 			if (!String.valueOf(output.getText()).equals("0")) {
 				output.setText(output.getText() + "0");
@@ -198,6 +282,44 @@ public class MainActivity extends Activity implements OnClickListener {
 		a = String.valueOf(output.getText());
 		output.setText("");
 		setPoint = false;
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		savePreferences();
+	}
+
+	public float getM1() {
+		return m1;
+	}
+
+	public void setM1(float m1) {
+		this.m1 = m1;
+	}
+
+	public float getM2() {
+		return m2;
+	}
+
+	public void setM2(float m2) {
+		this.m2 = m2;
+	}
+
+	public float getM3() {
+		return m3;
+	}
+
+	public void setM3(float m3) {
+		this.m3 = m3;
+	}
+
+	public float getM4() {
+		return m4;
+	}
+
+	public void setM4(float m4) {
+		this.m4 = m4;
 	}
 
 }
