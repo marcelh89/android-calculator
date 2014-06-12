@@ -3,7 +3,6 @@ package com.example.taschenrechner;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -46,9 +45,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		editor.commit();
 	}
 
-	void saveButtonHandling(String buttonKey, float buttonValue, String inputAsString) {
+	void saveButtonHandling(String buttonKey, float buttonValue,
+			String inputAsString) {
 		loadPreferences();
-		
+
 		if (inputAsString.equals("")) {
 
 			if (buttonValue != Float.NaN) {
@@ -56,7 +56,8 @@ public class MainActivity extends Activity implements OnClickListener {
 			}
 
 		} else {
-			if (inputAsString.contains(String.valueOf(Float.NaN))) {
+			if (inputAsString.contains(String.valueOf(Float.NaN))
+					|| inputAsString.contains("ERROR")) {
 				output.setText("ERROR");
 			} else {
 
