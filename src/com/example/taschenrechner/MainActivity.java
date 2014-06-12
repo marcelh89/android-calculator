@@ -3,6 +3,7 @@ package com.example.taschenrechner;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -93,6 +94,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				(Button) findViewById(R.id.buttonM2),
 				(Button) findViewById(R.id.buttonM3),
 				(Button) findViewById(R.id.buttonM4),
+				(Button) findViewById(R.id.button0),
 				(Button) findViewById(R.id.button1),
 				(Button) findViewById(R.id.button2),
 				(Button) findViewById(R.id.button3),
@@ -109,7 +111,8 @@ public class MainActivity extends Activity implements OnClickListener {
 				(Button) findViewById(R.id.buttonDiv),
 				(Button) findViewById(R.id.buttonCalc),
 				(Button) findViewById(R.id.buttonDELONE),
-				(Button) findViewById(R.id.buttonDELALL), };
+				(Button) findViewById(R.id.buttonDELALL),
+				(Button) findViewById(R.id.buttonComma), };
 
 		for (Button button : buttons) {
 			button.setOnClickListener(this);
@@ -139,7 +142,10 @@ public class MainActivity extends Activity implements OnClickListener {
 			break;
 
 		case R.id.button0:
-			if (!String.valueOf(output.getText()).equals("0")) {
+			if (String.valueOf(output.getText()).equals("0")) {
+				output.setText(output.getText() + ".0");
+				setPoint = true;
+			} else {
 				output.setText(output.getText() + "0");
 			}
 			break;
@@ -209,12 +215,20 @@ public class MainActivity extends Activity implements OnClickListener {
 			}
 			break;
 		case R.id.button9:
-			if (String.valueOf(output.getText()).equals("0")) {
-				output.setText(output.getText() + ".9");
-				setPoint = true;
-			} else {
-				output.setText(output.getText() + "9");
+			output.setText(output.getText() + "9");
+			break;
+
+		case R.id.buttonComma:
+			// if(String.valueOf(output.getText()).contains("."))
+
+			boolean check = inputAsString != ""
+					&& inputAsString != String.valueOf(Float.NaN)
+					&& inputAsString != "Error" && !inputAsString.contains(".");
+
+			if (!setPoint && check) {
+				output.setText(inputAsString + ".");
 			}
+			// sonst mach nix
 			break;
 
 		case R.id.buttonPlus:
