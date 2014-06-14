@@ -26,7 +26,7 @@ public final class R {
     }
     public static final class id {
         public static final int TableRow2=0x7f080003;
-        public static final int action_settings=0x7f08001e;
+        public static final int action_settings=0x7f08001d;
         public static final int button0=0x7f080018;
         public static final int button1=0x7f080013;
         public static final int button2=0x7f080014;
@@ -39,8 +39,7 @@ public final class R {
         public static final int button9=0x7f08000b;
         public static final int buttonCalc=0x7f08001a;
         public static final int buttonComma=0x7f080019;
-        public static final int buttonDELALL=0x7f08001d;
-        public static final int buttonDELONE=0x7f08001c;
+        public static final int buttonDEL=0x7f08001c;
         public static final int buttonDiv=0x7f08001b;
         public static final int buttonM1=0x7f080004;
         public static final int buttonM2=0x7f080005;
