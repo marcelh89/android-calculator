@@ -4,22 +4,34 @@ import com.example.taschenrechner.util.Calculator;
 import com.example.taschenrechner.util.Memory;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * @author marcman
  * 
  */
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity implements OnClickListener,
+		SensorEventListener {
 
 	TextView output;
 	Memory memory;
 	Calculator calculator;
+	SensorManager sManager;
+	Float foreignvalue = 0f;
+	boolean alertBox = false;
+	Float delta = 0f;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +56,8 @@ public class MainActivity extends Activity implements OnClickListener {
 			Button button = (Button) this.findViewById(buttonID);
 			button.setOnClickListener(this);
 		}
+
+		sManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
 	}
 
@@ -127,8 +141,79 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
-		memory.savePreferences();
+	protected void onResume() {
+		super.onResume();
+
+		sManager.registerListener(this,
+				sManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+				SensorManager.SENSOR_DELAY_FASTEST);
 	}
+
+	@Override
+	protected void onStop() {
+		sManager.unregisterListener(this);
+		memory.savePreferences();
+		super.onStop();
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// Do nothing
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// if sensor is unreliable, return void
+		if (event.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) {
+			return;
+		}
+
+		// Float x = event.values[2];
+		Float y = event.values[1];
+		// Float z = event.values[0];
+		// Log.i("y -- foreign y", "" + y + " -- " + foreignvalue);
+		// recognize throw axis
+
+		delta = (float) Math.sqrt(Math.pow((foreignvalue - y), 2));
+
+		if (delta > 100) {
+			Log.i("delta", "" + delta);
+
+			if (!alertBox) {
+
+				alertBox = true;
+
+				new AlertDialog.Builder(this)
+						.setTitle("Delete entry")
+						.setMessage(
+								"Are you sure you want to delete this entry?")
+						.setPositiveButton(android.R.string.yes,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										dialog.cancel();
+										output.setText("");
+										alertBox = false;
+
+									}
+								})
+						.setNegativeButton(android.R.string.no,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int which) {
+										dialog.cancel();
+										alertBox = false;
+
+									}
+								}).setIcon(android.R.drawable.ic_dialog_alert)
+						.show();
+
+			}
+
+		}
+
+		foreignvalue = y;
+
+	}
+
 }
